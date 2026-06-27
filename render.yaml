@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: gsi-site-progress-api-kpavan-20260627
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120 app:app
+    healthCheckPath: /api/projects
+
+  - type: web
+    name: gsi-site-progress-kpavan-20260627
+    runtime: static
+    buildCommand: node railway/frontend-build.mjs
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: BACKEND_URL
+        value: https://gsi-site-progress-api-kpavan-20260627.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
